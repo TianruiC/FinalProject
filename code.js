@@ -1,1 +1,7 @@
-console.log("helloworld")
+console.log("HelloWorld")
+var majorData=d3.csv("data/degrees-that-pay-back.csv")
+majorData.then(function(data){console.log(data)},function(err){console.log("err")})
+var collegeData=d3.csv("data/salaries-by-college-type.csv")
+collegeData.then(function(data){console.log(data)},function(err){console.log("err")})
+var regionData=d3.csv("data/salaries-by-region.csv")
+regionData.then(function(data){console.log(data)},function(err){console.log("err")})
