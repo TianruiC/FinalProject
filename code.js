@@ -26,14 +26,19 @@ regionData.then(function(data){
   console.log(newRegionData)
 },function(err){console.log("err")})
 
-d3.json("us-states.json", function(json) {
+d3.json("us-states.json").then(function(json){
         drawMap(json)
-});
+},function(err){console.log("err")})
 
 var drawMap=function(json){
-  var path = d3.geoPath() .projection(d3.geoAlbersUsa());
+  var screen={width:850,height:700}
+  var margins = {top: 50, right: 50, bottom: 50, left: 50}
+  var height=screen.height-margins.top-margins.bottom
+  var width=screen.width-margins.right-margins.left
+  svg=d3.select("body").append("svg").attr("width",screen.width).attr("height",screen.height)
+  var projection = d3.geoAlbersUsa() .translate([width/2, height/2]);
+  var path = d3.geoPath().projection(d3.geoAlbersUsa());
   //Bind data and create one path per GeoJSON feature
-  svg=d3.select("body").append("svg")
   svg.selectAll("path")
      .data(json.features)
      .enter()
