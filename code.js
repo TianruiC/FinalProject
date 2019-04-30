@@ -25,3 +25,18 @@ regionData.then(function(data){
                                                  MidCareer75thPercentileSalary:d.MidCareer75thPercentileSalary};})
   console.log(newRegionData)
 },function(err){console.log("err")})
+
+d3.json("us-states.json", function(json) {
+        drawMap(json)
+});
+
+var drawMap=function(json){
+  var path = d3.geoPath() .projection(d3.geoAlbersUsa());
+  //Bind data and create one path per GeoJSON feature
+  svg=d3.select("body").append("svg")
+  svg.selectAll("path")
+     .data(json.features)
+     .enter()
+     .append("path")
+     .attr("d", path);
+}
