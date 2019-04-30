@@ -1,4 +1,4 @@
-School Name,Region,Starting Median Salary,Mid-Career Median Salary,Mid-Career 10th Percentile Salary,Mid-Career 25th Percentile Salary,Mid-Career 75th Percentile Salary,Mid-Career 90th Percentile Salary
+SchoolName,Region,StartingMedianSalary,MidCareerMedianSalary,MidCareer10thPercentileSalary,MidCareer25thPercentileSalary,MidCareer75thPercentileSalary,MidCareer90thPercentileSalary
 Stanford University,California,"$70,400.00 ","$129,000.00 ","$68,400.00 ","$93,100.00 ","$184,000.00 ","$257,000.00 "
 California Institute of Technology (CIT),California,"$75,500.00 ","$123,000.00 ",N/A,"$104,000.00 ","$161,000.00 ",N/A
 Harvey Mudd College,California,"$71,800.00 ","$122,000.00 ",N/A,"$96,000.00 ","$180,000.00 ",N/A

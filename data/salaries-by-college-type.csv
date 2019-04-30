@@ -1,4 +1,4 @@
-School Name,School Type,Starting Median Salary,Mid-Career Median Salary,Mid-Career 10th Percentile Salary,Mid-Career 25th Percentile Salary,Mid-Career 75th Percentile Salary,Mid-Career 90th Percentile Salary
+SchoolName,SchoolType,StartingMedianSalary,MidCareerMedianSalary,MidCareer10thPercentileSalary,MidCareer25thPercentileSalary,MidCareer75thPercentileSalary,MidCareer90thPercentileSalary
 Massachusetts Institute of Technology (MIT),Engineering,"$72,200.00 ","$126,000.00 ","$76,800.00 ","$99,200.00 ","$168,000.00 ","$220,000.00 "
 California Institute of Technology (CIT),Engineering,"$75,500.00 ","$123,000.00 ",N/A,"$104,000.00 ","$161,000.00 ",N/A
 Harvey Mudd College,Engineering,"$71,800.00 ","$122,000.00 ",N/A,"$96,000.00 ","$180,000.00 ",N/A
