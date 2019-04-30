@@ -10,10 +10,12 @@ collegeData.then(function(data){
 var regionData=d3.csv("data/salaries-by-region.csv")
 regionData.then(function(data){
   console.log(data)
+  
 },function(err){console.log("err")})
 
 d3.json("us-states.json").then(function(json){
-        drawMap(json)
+    console.log(json)
+    drawMap(json)
 },function(err){console.log("err")})
 
 var drawMap=function(json){
