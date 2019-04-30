@@ -36,9 +36,8 @@ var drawMap=function(json){
   var height=screen.height-margins.top-margins.bottom
   var width=screen.width-margins.right-margins.left
   svg=d3.select("body").append("svg").attr("width",screen.width).attr("height",screen.height)
-  var projection = d3.geoAlbersUsa() .translate([width/2, height/2]);
-  var path = d3.geoPath().projection(d3.geoAlbersUsa());
-  //Bind data and create one path per GeoJSON feature
+  var projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale([900]);
+  var path = d3.geoPath().projection(projection);
   svg.selectAll("path")
      .data(json.features)
      .enter()
