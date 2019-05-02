@@ -10,7 +10,7 @@ collegeData.then(function(data){
 var regionData=d3.csv("data/salaries-by-region.csv")
 regionData.then(function(data){
   console.log(data)
-  
+
 },function(err){console.log("err")})
 
 d3.json("us-states.json").then(function(json){
@@ -31,5 +31,9 @@ var drawMap=function(json){
      .enter()
      .append("path")
      .attr("d", path)
-     .style("fill", "steelblue");
+     .style("fill", "steelblue")
+     .on("mouseover", function(d,i) {
+         d3.select(this).attr("stroke","black").style("fill","grey")})
+     .on("mouseout", function() {
+         d3.select(this).attr("stroke","none").style("fill", "steelblue")})
 }
