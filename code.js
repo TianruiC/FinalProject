@@ -252,9 +252,10 @@ var drawCorrelation=function(data){
      .call(yAxis)
      .attr("transform","translate("+(margins.left)+","+0+")")
   svg.append("text")
-     .text("correlation is "+r+ ".")
-     .attr("x",margins.left)
-     .attr("y",margins.top)
+     .text("Correlation is "+r+ ".")
+     .attr("x",(600))
+     .attr("y",(450))
+     .attr("id","correlationtext")
 }
 var calculateCorrelation=function(data){
   var start=data.map(function(d){return d.StartingMedianSalary})
