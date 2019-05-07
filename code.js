@@ -1,28 +1,36 @@
-console.log("HelloWorld")
 var majorData=d3.csv("data/degrees-that-pay-back.csv")
-majorData.then(function(data){
-  //console.log(data)
-  drawCorrelation(data)
-  drawBar(data)
-  // calculateCorrelation(data)
-},function(err){console.log("err")})
-
 var collegeData=d3.csv("data/salaries-by-college-type.csv")
-collegeData.then(function(data){
-  //console.log(data)
-},function(err){console.log("err")})
-
 var regionData=d3.csv("data/salaries-by-region.csv")
-regionData.then(function(data){
-  //console.log(data)
-},function(err){console.log("err")})
+var us=d3.json("us-states.json")
+Promise.all([majorData,collegeData,regionData,us]).then(function(data){
+  majorData=data[0]
+  collegeData=data[1]
+  regionData=data[2]
+  us=data[3]
+  drawStartingMap(data)
+  drawMidMap(data)
+  drawCorrelation(majorData)
+  drawBar(majorData)
+},function(err){console.log(err)})
 
-d3.json("us-states.json").then(function(json){
-    //console.log(json)
-    drawMap(json)
-},function(err){console.log("err")})
-
-var drawMap=function(json){
+var drawStartingMap=function(data){
+  var regionData=data[2]
+  var CaliforniaData=[]
+  regionData.forEach(function(d){if(d.Region=="California"){CaliforniaData.push(d)}})
+  var NortheasternData=[]
+  regionData.forEach(function(d){if(d.Region=="Northeastern"){NortheasternData.push(d)}})
+  var SouthernData=[]
+  regionData.forEach(function(d){if(d.Region=="Southern"){SouthernData.push(d)}})
+  var MidwesternData=[]
+  regionData.forEach(function(d){if(d.Region=="Midwestern"){MidwesternData.push(d)}})
+  var WesternData=[]
+  regionData.forEach(function(d){if(d.Region=="Western"){WesternData.push(d)}})
+  var color=d3.scaleQuantile()
+              .domain([38000,52000])
+              .range(["#D9F2DE","#B1E2CA","#8AD2C2","#65BAC0","#4088AD","#2D4285"])
+  var color1=d3.scaleQuantile()
+              .domain([75000,95000])
+              .range(["#D9F2DE","#B1E2CA","#8AD2C2","#65BAC0","#4088AD","#2D4285"])
   var screen={width:950,height:700}
   var margins = {top: 50, right: 50, bottom: 50, left: 50}
   var height=screen.height-margins.top-margins.bottom
@@ -42,22 +50,178 @@ var drawMap=function(json){
     else if (Western.indexOf(data)>-1){return "Western"}
     else{return "California"}
   }
+  var finddata=function(region){
+    if(region=="Northeastern"){return NortheasternData}
+    else if (region=="Southern"){return SouthernData}
+    else if (region=="Midwestern"){return MidwesternData}
+    else if (region=="Western"){return WesternData}
+    else{return CaliforniaData}
+    }
   svg.selectAll("path")
-     .data(json.features)
+     .data(data[3].features)
      .enter()
      .append("path")
      .attr("d", path)
      .attr("id",function(d){return region(d.properties.name)})
-     .style("fill", "steelblue")
+     .style("fill", function(d){
+       var data=finddata(region(d.properties.name))
+       var ave=d3.sum(data.map(function(d){return d.StartingMedianSalary}))/data.length
+       return color(ave)
+     })
+     .attr("stroke","grey")
      .on("mouseover", function(d,i) {
          var region=d3.select(this).attr("id")
          var id="#".concat(region)
-         d3.selectAll(id).attr("stroke","black").style("fill","grey")
-       })
+         d3.selectAll(id).attr("stroke","black").attr("stroke-width",2)})
      .on("mouseout", function() {
        var region=d3.select(this).attr("id")
        var id="#".concat(region)
-       d3.selectAll(id).attr("stroke","none").style("fill","steelblue")})
+       d3.selectAll(id).attr("stroke","grey").attr("stroke-width",1)})
+  svg.append('g')
+        .attr('id',"legend")
+        .append('rect')
+        .classed('fillbar', true)
+        .attr('x', 20)
+        .attr('y', 20)
+        .attr('width', 300)
+        .attr('height', 20)
+        .attr('transform',"translate(600,550)");
+  var svgDefs = svg.append('defs');
+  var mainGradient = svgDefs.append('linearGradient')  .attr('id', 'mainGradient');
+  mainGradient.append('stop').attr('offset', '0%').attr("stop-color", "#D9F2DE")
+  mainGradient.append('stop').attr('offset', '17%').attr("stop-color", "#B1E2CA")
+  mainGradient.append('stop').attr('offset', '33%').attr("stop-color", "#8AD2C2")
+  mainGradient.append('stop').attr('offset', '50%').attr("stop-color", "#65BAC0")
+  mainGradient.append('stop').attr('offset', '67%').attr("stop-color", "#4088AD");
+  mainGradient.append('stop').attr('offset', '83%').attr("stop-color", "#2D4285");
+  svg.append("text")
+     .attr("id","max")
+     .text("$52000")
+     .attr("x",900)
+     .attr("y",610)
+  svg.append("text")
+     .attr("id","min")
+     .text("$38000")
+     .attr("x",600)
+     .attr("y",610)
+  svg.append("text")
+      .attr("id","median")
+      .text("$45000")
+      .attr("x",750)
+      .attr("y",610)
+  svg.append("line")
+     .attr("x1",770)
+     .attr("x2",770)
+     .attr("y1",565)
+     .attr("y2",590)
+     .attr("stroke","black")
+     .attr("stroke-width",2)
+     .style("opacity",0.75)
+}
+var drawMidMap=function(data){
+  var regionData=data[2]
+  var CaliforniaData=[]
+  regionData.forEach(function(d){if(d.Region=="California"){CaliforniaData.push(d)}})
+  var NortheasternData=[]
+  regionData.forEach(function(d){if(d.Region=="Northeastern"){NortheasternData.push(d)}})
+  var SouthernData=[]
+  regionData.forEach(function(d){if(d.Region=="Southern"){SouthernData.push(d)}})
+  var MidwesternData=[]
+  regionData.forEach(function(d){if(d.Region=="Midwestern"){MidwesternData.push(d)}})
+  var WesternData=[]
+  regionData.forEach(function(d){if(d.Region=="Western"){WesternData.push(d)}})
+  var color=d3.scaleQuantile()
+              .domain([40000,55000])
+              .range(["#D9F2DE","#B1E2CA","#8AD2C2","#65BAC0","#4088AD","#2D4285"])
+  var color1=d3.scaleQuantile()
+              .domain([75000,95000])
+              .range(["#D9F2DE","#B1E2CA","#8AD2C2","#65BAC0","#4088AD","#2D4285"])
+  var screen={width:950,height:700}
+  var margins = {top: 50, right: 50, bottom: 50, left: 50}
+  var height=screen.height-margins.top-margins.bottom
+  var width=screen.width-margins.right-margins.left
+  svg=d3.select("body").append("div").attr("id","midmap").style("display","none")
+        .append("svg").attr("width",screen.width).attr("height",screen.height)
+  var projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale([1100]);
+  var path = d3.geoPath().projection(projection);
+  var Northeastern=["Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont","New Jersey", "New York", "Pennsylvania"]
+  var Southern=["Delaware", "Florida", "Georgia", "Maryland", "North Carolina", "South Carolina", "Virginia", "District of Columbia", "West Virginia","Alabama", "Kentucky", "Mississippi","Tennessee","Arkansas", "Louisiana", "Oklahoma", "Texas"]
+  var Midwestern=["Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin","Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota"]
+  var Western=["Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", "Wyoming","Alaska", "Hawaii", "Oregon",  "Washington"]
+  var region=function(data){
+    if(Northeastern.indexOf(data)>-1){return "Northeastern"}
+    else if (Southern.indexOf(data)>-1){return "Southern"}
+    else if (Midwestern.indexOf(data)>-1){return "Midwestern"}
+    else if (Western.indexOf(data)>-1){return "Western"}
+    else{return "California"}
+  }
+  var finddata=function(region){
+    if(region=="Northeastern"){return NortheasternData}
+    else if (region=="Southern"){return SouthernData}
+    else if (region=="Midwestern"){return MidwesternData}
+    else if (region=="Western"){return WesternData}
+    else{return CaliforniaData}
+    }
+  svg.selectAll("path")
+     .data(data[3].features)
+     .enter()
+     .append("path")
+     .attr("d", path)
+     .attr("id",function(d){return region(d.properties.name)})
+     .style("fill", function(d){
+       var data=finddata(region(d.properties.name))
+       var ave=d3.sum(data.map(function(d){return d.MidCareerMedianSalary}))/data.length
+       return color1(ave)
+     })
+     .attr("stroke","grey")
+     .on("mouseover", function(d,i) {
+         var region=d3.select(this).attr("id")
+         var id="#".concat(region)
+         d3.selectAll(id).attr("stroke","black").attr("stroke-width",2)})
+     .on("mouseout", function() {
+       var region=d3.select(this).attr("id")
+       var id="#".concat(region)
+       d3.selectAll(id).attr("stroke","grey").attr("stroke-width",1)})
+    svg.append('g')
+          .attr('id',"legend")
+          .append('rect')
+          .classed('fillbar2', true)
+          .attr('x', 20)
+          .attr('y', 20)
+          .attr('width', 300)
+          .attr('height', 20)
+          .attr('transform',"translate(600,550)");
+    var svgDefs = svg.append('defs');
+    var mainGradient2 = svgDefs.append('linearGradient')  .attr('id', 'mainGradient2');
+    mainGradient2.append('stop').attr('offset', '0%').attr("stop-color", "#D9F2DE")
+    mainGradient2.append('stop').attr('offset', '17%').attr("stop-color", "#B1E2CA")
+    mainGradient2.append('stop').attr('offset', '33%').attr("stop-color", "#8AD2C2")
+    mainGradient2.append('stop').attr('offset', '50%').attr("stop-color", "#65BAC0")
+    mainGradient2.append('stop').attr('offset', '67%').attr("stop-color", "#4088AD");
+    mainGradient2.append('stop').attr('offset', '83%').attr("stop-color", "#2D4285");
+    svg.append("text")
+       .attr("id","max")
+       .text("$95000")
+       .attr("x",900)
+       .attr("y",610)
+    svg.append("text")
+       .attr("id","min")
+       .text("$75000")
+       .attr("x",600)
+       .attr("y",610)
+    svg.append("text")
+        .attr("id","median")
+        .text("$85000")
+        .attr("x",750)
+        .attr("y",610)
+    svg.append("line")
+       .attr("x1",770)
+       .attr("x2",770)
+       .attr("y1",565)
+       .attr("y2",590)
+       .attr("stroke","black")
+       .attr("stroke-width",2)
+       .style("opacity",0.75)
 }
 var drawCorrelation=function(data){
   var screen={width:950,height:600}
@@ -253,18 +417,27 @@ var hideall=function(){
 var showall=function(){
   d3.selectAll("div").style("display","block")
 }
-d3.select("body").append("button").text("barchart").attr("id","barchartbutton")
-  .on("click",function(){
-    hideall()
-    d3.select("#majorbar").style("display","block")
-  })
-d3.select("body").append("button").text("correlation").attr("id","correlationbutton")
-  .on("click",function(){
-    hideall()
-    d3.select("#majorcorrelation").style("display","block")
-  })
-d3.select("body").append("button").text("mapbutton").attr("id","mapbutton")
+d3.select("body").append("button").text("Starting Salary by Region").attr("id","mapbutton")
   .on("click",function(){
     hideall()
     d3.select("#map").style("display","block")
+    document.getElementById("heading").innerHTML = "Average Starting Median Salary by Region"
+  })
+d3.select("body").append("button").text("MidCareer Salary by Region").attr("id","midmapbutton")
+  .on("click",function(){
+    hideall()
+    d3.select("#midmap").style("display","block")
+    document.getElementById("heading").innerHTML = "Average Mid-Career Median Salary by Region"
+  })
+d3.select("body").append("button").text("Salary correlation").attr("id","correlationbutton")
+  .on("click",function(){
+    hideall()
+    d3.select("#majorcorrelation").style("display","block")
+    document.getElementById("heading").innerHTML = "Correlation between Starting Median Salary and Mid-Career Median Salary"
+  })
+d3.select("body").append("button").text("percentile chart").attr("id","barchartbutton")
+  .on("click",function(){
+    hideall()
+    d3.select("#majorbar").style("display","block")
+    document.getElementById("heading").innerHTML = "Mid-Career Salary percentile chart by Major"
   })
