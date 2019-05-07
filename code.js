@@ -24,11 +24,11 @@ d3.json("us-states.json").then(function(json){
 },function(err){console.log("err")})
 
 var drawMap=function(json){
-  var screen={width:850,height:700}
+  var screen={width:950,height:700}
   var margins = {top: 50, right: 50, bottom: 50, left: 50}
   var height=screen.height-margins.top-margins.bottom
   var width=screen.width-margins.right-margins.left
-  svg=d3.select("body").append("div").attr("id","map").style("display","none")
+  svg=d3.select("body").append("div").attr("id","map").style("display","block")
         .append("svg").attr("width",screen.width).attr("height",screen.height)
   var projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale([900]);
   var path = d3.geoPath().projection(projection);
@@ -44,7 +44,7 @@ var drawMap=function(json){
          d3.select(this).attr("stroke","none").style("fill", "steelblue")})
 }
 var drawCorrelation=function(data){
-  var screen={width:850,height:600}
+  var screen={width:950,height:600}
   var margins = {top: 50, right: 50, bottom: 50, left: 50}
   var height=screen.height-margins.top-margins.bottom
   var width=screen.width-margins.right-margins.left
@@ -53,7 +53,8 @@ var drawCorrelation=function(data){
   var color=d3.scaleOrdinal(d3.schemeSet2)
   var r=calculateCorrelation(data).toFixed(4)
   svg=d3.select("body").append("div").attr("id","majorcorrelation").style("display","none")
-        .append("svg").attr("width",screen.width).attr("height",screen.height).attr("id","correlation")//.attr("class",hidden)
+        .append("svg").attr("width",screen.width).attr("height",screen.height).attr("id","correlation")
+        .attr('transform', 'translate(' +(margins.left)+','+(0)+')')//.attr("class",hidden)
   svg.selectAll("circle")
      .data(data)
      .enter()
@@ -89,16 +90,16 @@ var calculateCorrelation=function(data){
   return r
 }
 var drawBar=function(data){
-  var screen={width:800,height:1200}
-  var margins = {top: 50, right: 200, bottom: 50, left: 10}
+  var screen={width:950,height:1200}
+  var margins = {top: 50, right: 180, bottom: 10, left: 30}
   var height=screen.height-margins.top-margins.bottom
   var width=screen.width-margins.right-margins.left
-  var xScale=d3.scaleLinear().domain([0,210000]).nice().range([0,width])
+  var xScale=d3.scaleLinear().domain([0,210000]).nice().range([margins.left,width])
   var yScale=d3.scaleLinear().domain([0,data.length]).nice().range([margins.top,height])
   var radius=5
   console.log(yScale(3),height,margins.top)
-  svg=d3.select("body").append("div").attr("id","majorbar").style("display","block")
-        .append("svg").attr("width",screen.width).attr("height",screen.height).attr("id","majorbarchart")
+  div=d3.select("body").append("div").attr("id","majorbar").style("display","none")
+  svg=div.append("svg").attr("width",screen.width).attr("height",screen.height).attr("id","majorbarchart")
   svg.append("g").selectAll("rect")
      .data(data)
      .enter()
@@ -116,6 +117,18 @@ var drawBar=function(data){
      .on("mouseout",function(d){
        d3.select(this).style("opacity",0)
      })
+  var linedata=[0,50000,100000,150000,200000]
+  svg.append("g").selectAll("line")
+     .data(linedata)
+     .enter()
+     .append("line")
+     .attr("x1",function(d){return xScale(d)+1})
+     .attr("x2",function(d){return xScale(d)+1})
+     .attr("y1",function(d){return margins.top-10})
+     .attr("y2",function(d){return height})
+     .style("stroke", "black")
+     .style("stroke-width", 1)
+     .style("opacity",0.5)
   svg.append("g").selectAll("line")
      .data(data)
      .enter()
@@ -191,10 +204,51 @@ var drawBar=function(data){
      .enter()
      .append("text")
      .attr("id","majortext")
-     .attr("x",width)
+     .attr("x",width+2)
      .attr("y",function(d,i){return yScale(i)+5})
      .text(function(d){return d.UndergraduateMajor})
-
-
-
+  var xAxis=d3.axisBottom(xScale).ticks(5)
+  svg.append("g")
+     .attr("id","barxAxis")
+     .call(xAxis)
+     .attr('transform', 'translate(' +(0.5)+','+(height)+')')
+  var barlegendtext=["10 percentile","25 percentile","Median","75 percentile","90 percentile"]
+  var barlegendcolor=["#C2C9B4","#9BAD8F","#70916B","#47744E","#345849"]
+  svg.append("g").selectAll("rect")
+           .data(barlegendcolor)
+           .enter()
+           .append("rect")
+           .attr("x",function(d,i){return i*width/barlegendcolor.length+10+margins.left})
+           .attr("y",20)
+           .attr("width",10)
+           .attr("height",10)
+           .style("fill",function(d){return d})
+  svg.append("g").selectAll("text")
+           .data(barlegendtext)
+           .enter()
+           .append("text")
+           .attr("x",function(d,i){return i*width/barlegendcolor.length+25+margins.left})
+           .attr("y",30)
+           .text(function(d){return d})
 }
+var hideall=function(){
+  d3.selectAll("div").style("display","none")
+}
+var showall=function(){
+  d3.selectAll("div").style("display","block")
+}
+d3.select("body").append("button").text("barchart").attr("id","barchartbutton")
+  .on("click",function(){
+    hideall()
+    d3.select("#majorbar").style("display","block")
+  })
+d3.select("body").append("button").text("correlation").attr("id","correlationbutton")
+  .on("click",function(){
+    hideall()
+    d3.select("#majorcorrelation").style("display","block")
+  })
+d3.select("body").append("button").text("mapbutton").attr("id","mapbutton")
+  .on("click",function(){
+    hideall()
+    d3.select("#map").style("display","block")
+  })
