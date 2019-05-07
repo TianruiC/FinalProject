@@ -1,7 +1,7 @@
 console.log("HelloWorld")
 var majorData=d3.csv("data/degrees-that-pay-back.csv")
 majorData.then(function(data){
-  console.log(data)
+  //console.log(data)
   drawCorrelation(data)
   drawBar(data)
   // calculateCorrelation(data)
@@ -9,17 +9,16 @@ majorData.then(function(data){
 
 var collegeData=d3.csv("data/salaries-by-college-type.csv")
 collegeData.then(function(data){
-  console.log(data)
+  //console.log(data)
 },function(err){console.log("err")})
 
 var regionData=d3.csv("data/salaries-by-region.csv")
 regionData.then(function(data){
-  console.log(data)
-
+  //console.log(data)
 },function(err){console.log("err")})
 
 d3.json("us-states.json").then(function(json){
-    console.log(json)
+    //console.log(json)
     drawMap(json)
 },function(err){console.log("err")})
 
