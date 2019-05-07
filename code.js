@@ -29,18 +29,35 @@ var drawMap=function(json){
   var width=screen.width-margins.right-margins.left
   svg=d3.select("body").append("div").attr("id","map").style("display","block")
         .append("svg").attr("width",screen.width).attr("height",screen.height)
-  var projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale([900]);
+  var projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale([1100]);
   var path = d3.geoPath().projection(projection);
+  var Northeastern=["Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont","New Jersey", "New York", "Pennsylvania"]
+  var Southern=["Delaware", "Florida", "Georgia", "Maryland", "North Carolina", "South Carolina", "Virginia", "District of Columbia", "West Virginia","Alabama", "Kentucky", "Mississippi","Tennessee","Arkansas", "Louisiana", "Oklahoma", "Texas"]
+  var Midwestern=["Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin","Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota"]
+  var Western=["Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", "Wyoming","Alaska", "Hawaii", "Oregon",  "Washington"]
+  var region=function(data){
+    if(Northeastern.indexOf(data)>-1){return "Northeastern"}
+    else if (Southern.indexOf(data)>-1){return "Southern"}
+    else if (Midwestern.indexOf(data)>-1){return "Midwestern"}
+    else if (Western.indexOf(data)>-1){return "Western"}
+    else{return "California"}
+  }
   svg.selectAll("path")
      .data(json.features)
      .enter()
      .append("path")
      .attr("d", path)
+     .attr("id",function(d){return region(d.properties.name)})
      .style("fill", "steelblue")
      .on("mouseover", function(d,i) {
-         d3.select(this).attr("stroke","black").style("fill","grey")})
+         var region=d3.select(this).attr("id")
+         var id="#".concat(region)
+         d3.selectAll(id).attr("stroke","black").style("fill","grey")
+       })
      .on("mouseout", function() {
-         d3.select(this).attr("stroke","none").style("fill", "steelblue")})
+       var region=d3.select(this).attr("id")
+       var id="#".concat(region)
+       d3.selectAll(id).attr("stroke","none").style("fill","steelblue")})
 }
 var drawCorrelation=function(data){
   var screen={width:950,height:600}
