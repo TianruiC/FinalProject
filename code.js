@@ -348,6 +348,19 @@ var drawBar=function(data){
      .attr("cy",function(d,i){return yScale(i)})
      .attr("r",radius)
      .style("fill","#70916B")
+     .on("mouseover",function(d){
+          d3.select("#tooltip1")
+            .style("left",width+margin.left+margin.right+300)
+            .style("top",20)
+            .select("#percentage")
+            .text("");
+           d3.select("#day1")
+             .text("Day: "+d.day)
+         d3.select("#tooltip1").classed("hiddened",false);
+        })
+        .on("mouseout",function(){
+         d3.select("#tooltip1").classed("hiddened",true);
+        });
   svg.append("g").selectAll("circle")
      .data(data)
      .enter()

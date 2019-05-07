@@ -27,6 +27,19 @@
         font-size: 30px;
         color:#223B3C;
       }
+      .hiddened{
+        display:none;
+      }
+      #tooltip1,#tooltip2,#tooltip3{
+        position:fixed;
+        width:80px;
+        padding:10px;
+        margin-top:180px;
+        border-radius: 10px;
+        pointer-events:none;
+        background-color:white;
+        box-shadow:4px 4px 10px rgba(0,0,0,0.4);
+      }
       /*resource https://www.magnet4blogging.net/button-styles/*/
       button{
         position:absolute;
@@ -56,6 +69,7 @@
       #correlationbutton{top:40%}
       #barchartbutton{top:50%}
       #midmapbutton{top:30%}
+      #barchartbutton2{top:60%}
       .fillbar{
         fill: url(#mainGradient);
       }
@@ -66,6 +80,8 @@
   </head>
   <body>
 <h1 id="heading">Hello World</h1>
+<div id="tooltip1" class="hiddened"> <p><strong><span id="percentage"></span>percentile value is <span id="tooltipsvalue"></span></strong></p>
+      <p><span id="value"></span></p>
   </body>
     <script type="text/javascript" src="code.js">
     </script>
